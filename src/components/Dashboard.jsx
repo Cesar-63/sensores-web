@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { ChevronLeft, ChevronRight, Calendar, RefreshCw } from "lucide-react";
 
-const API_URL = "https://xkakdskzq0.execute-api.us-east-2.amazonaws.com/data"; // tu endpoint GET
+const API_URL = "https://xkakdskzq0.execute-api.us-east-2.amazonaws.com/data";
 
 export const Dashboard = () => {
   const [allData, setAllData] = useState([]);
@@ -13,7 +13,6 @@ export const Dashboard = () => {
   const [daysRange, setDaysRange] = useState(7);
   const [dataInfo, setDataInfo] = useState({ count: 0, scannedAll: false });
 
-  // Fetch ALL data for the selected range in ONE call
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -26,7 +25,6 @@ export const Dashboard = () => {
         const desdeStr = desde.toISOString().split('.')[0];
         const hastaStr = hasta.toISOString().split('.')[0];
         
-        // fetchAll=true hace que el Lambda pagine automáticamente
         const url = `${API_URL}?sector=${sector}&desde=${desdeStr}&hasta=${hastaStr}&fetchAll=true`;
         
         const res = await fetch(url);
@@ -34,7 +32,6 @@ export const Dashboard = () => {
         
         const response = await res.json();
         
-        // El Lambda ahora devuelve { items, count, scannedAll }
         const jsonData = response.items || response;
         
         const ordered = jsonData.sort(
@@ -92,7 +89,7 @@ export const Dashboard = () => {
 
   const umbralHorasFrio = 7;
 
-  // Agrupar datos por día (usando hora local de Chile)
+  // Agrupar datos por día
   const dataByDay = {};
   allData.forEach(d => {
     if (typeof d.temperatura !== 'number' || !d.timestamp) return;
@@ -188,7 +185,6 @@ export const Dashboard = () => {
     <div className="p-6 max-w-6xl mx-auto bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🌿 Panel de Monitoreo</h1>
 
-      {/* Info de carga de datos */}
       <div className="mb-4 text-center">
         <span className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm">
           <Calendar size={16} />
@@ -197,7 +193,6 @@ export const Dashboard = () => {
         </span>
       </div>
 
-      {/* Controles superiores */}
       <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <label className="text-lg font-semibold">Sector:</label>
@@ -229,7 +224,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Tarjetas de Resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center shadow-lg">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">🌡️ Temperatura actual</h2>
@@ -260,7 +254,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Navegación por día */}
       <div className="bg-white rounded-xl p-4 shadow-lg mb-6">
         <div className="flex items-center justify-between">
           <button
@@ -297,7 +290,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Estadísticas del día seleccionado */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
         <div className="bg-white rounded-lg p-4 shadow text-center">
           <p className="text-xs text-gray-600 mb-1">Temp. Mín</p>
@@ -325,7 +317,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Gráficos del día seleccionado */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
@@ -394,7 +385,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Resumen de todos los días */}
       <div className="bg-white rounded-xl p-6 shadow-lg mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           📅 Resumen por día - Últimos {sortedDays.length} días
@@ -436,7 +426,6 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Gráfico de Horas Frío */}
       <div className="bg-white rounded-xl p-6 shadow-lg">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           ❄️ Horas frío por día (≤ {umbralHorasFrio}°C)
@@ -458,7 +447,6 @@ export const Dashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Footer con info técnica */}
       <div className="mt-8 text-center text-sm text-gray-500">
         <p>Datos actualizados: {new Date(ultima.timestamp).toLocaleString('es-CL')}</p>
         <p className="mt-1">Intervalo de medición: 10 minutos · Sector: {sector.toUpperCase()}</p>
